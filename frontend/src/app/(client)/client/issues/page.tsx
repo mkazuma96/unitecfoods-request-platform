@@ -37,7 +37,7 @@ export default function ClientIssueListPage() {
       {issues.length === 0 ? (
         <div className="bg-white rounded-lg shadow-sm p-12 text-center border border-gray-200">
           <h3 className="mt-2 text-sm font-medium text-gray-900">課題がありません</h3>
-          <p className="mt-1 text-sm text-gray-500">新しい課題や依頼を登録して、開発プロジェクトを始めましょう。</p>
+          <p className="mt-1 text-sm text-gray-700">新しい課題や依頼を登録して、開発プロジェクトを始めましょう。</p>
           <div className="mt-6">
             <Link href="/client/new-issue">
               <Button>+ 最初の課題を作成</Button>
@@ -49,13 +49,18 @@ export default function ClientIssueListPage() {
           <ul className="divide-y divide-gray-200">
             {issues.map((issue) => (
               <li key={issue.id}>
-                <Link href={`/client/issues/${issue.id}`} className="block hover:bg-gray-50 transition">
+                <Link 
+                  href={issue.status === 'draft' ? `/client/issues/${issue.id}/edit` : `/client/issues/${issue.id}`} 
+                  className="block hover:bg-gray-50 transition"
+                >
                   <div className="px-4 py-4 sm:px-6">
                     <div className="flex items-center justify-between">
                       <p className="text-sm font-medium text-blue-600 truncate">{issue.issue_code}</p>
                       <div className="ml-2 flex-shrink-0 flex">
-                        <p className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                          {issue.status}
+                        <p className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                          issue.status === 'draft' ? 'bg-gray-100 text-gray-800' : 'bg-green-100 text-green-800'
+                        }`}>
+                          {issue.status === 'draft' ? '下書き' : issue.status}
                         </p>
                       </div>
                     </div>
@@ -65,7 +70,7 @@ export default function ClientIssueListPage() {
                           {issue.title}
                         </p>
                       </div>
-                      <div className="mt-2 flex items-center text-sm text-gray-500 sm:mt-0">
+                      <div className="mt-2 flex items-center text-sm text-gray-700 sm:mt-0">
                         <p>商品名: {issue.product_name}</p>
                       </div>
                     </div>

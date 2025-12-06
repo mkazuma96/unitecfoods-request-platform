@@ -75,15 +75,15 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ issueId }) => {
       {/* Message List */}
       <div className="flex-1 p-4 overflow-y-auto space-y-4 bg-gray-50">
         {messages.length === 0 ? (
-          <p className="text-center text-gray-500 text-sm mt-10">メッセージはまだありません</p>
+          <p className="text-center text-gray-700 text-sm mt-10">メッセージはまだありません</p>
         ) : (
           messages.map((msg) => (
             <div key={msg.id} className="flex flex-col">
               <div className="flex items-baseline space-x-2">
                 <span className="font-bold text-sm text-gray-900">{msg.sender_name}</span>
-                <span className="text-xs text-gray-500">{new Date(msg.sent_at).toLocaleString()}</span>
+                <span className="text-xs text-gray-600">{new Date(msg.sent_at).toLocaleString()}</span>
               </div>
-              <div className="mt-1 bg-white p-3 rounded-lg shadow-sm border border-gray-200 text-sm text-gray-800 whitespace-pre-wrap">
+              <div className="mt-1 bg-white p-3 rounded-lg shadow-sm border border-gray-200 text-sm text-gray-900 whitespace-pre-wrap">
                 {msg.content}
               </div>
             </div>

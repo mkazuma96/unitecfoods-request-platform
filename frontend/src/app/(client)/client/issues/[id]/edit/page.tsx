@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import api from "@/lib/api";
 import { Button } from "@/components/ui/button";
-import { Plus, Trash2, Mic, Calendar as CalendarIcon, Upload, X } from "lucide-react";
+import { Plus, Trash2, Mic, Calendar as CalendarIcon, ArrowLeft, Upload, X } from "lucide-react";
 
 type IngredientForm = {
   name: string;
@@ -18,7 +18,7 @@ type AttachmentForm = {
   file_type?: string;
 };
 
-type NewIssueForm = {
+type EditIssueForm = {
   title: string;
   product_name: string;
   category: string;
@@ -32,13 +32,17 @@ type NewIssueForm = {
   attachments: AttachmentForm[];
 };
 
-export default function NewIssuePage() {
+export default function EditIssuePage() {
   const router = useRouter();
+  const params = useParams();
+  const id = params.id;
+  
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isListening, setIsListening] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [isUploading, setIsUploading] = useState(false);
 
-  const { register, control, handleSubmit, setValue, watch } = useForm<NewIssueForm>({
+  const { register, control, handleSubmit, setValue, watch, reset } = useForm<EditIssueForm>({
     defaultValues: {
       ingredients: [{ name: "", amount: "" }],
       attachments: [],
@@ -59,6 +63,41 @@ export default function NewIssuePage() {
 
   const isSampleProvided = watch("is_sample_provided");
 
+  // Fetch existing data
+  useEffect(() => {
+    const fetchIssue = async () => {
+      try {
+        const response = await api.get(`/issues/${id}`);
+        const issue = response.data;
+        
+        // Reset form with existing data
+        reset({
+          title: issue.title,
+          product_name: issue.product_name,
+          category: issue.category,
+          description: issue.description || "",
+          ingredients: issue.ingredients.length > 0 ? issue.ingredients : [{ name: "", amount: "" }],
+          attachments: issue.attachments || [],
+          urgency: issue.urgency,
+          client_arbitrary_code: issue.client_arbitrary_code || "",
+          desired_deadline: issue.desired_deadline || "",
+          is_sample_provided: issue.is_sample_provided,
+          sample_shipping_info: issue.sample_shipping_info || "",
+        });
+      } catch (error) {
+        console.error("Failed to fetch issue", error);
+        alert("課題情報の取得に失敗しました");
+        router.push("/client/issues");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (id) {
+      fetchIssue();
+    }
+  }, [id, reset, router]);
+
   // File Upload Handler
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -67,7 +106,7 @@ export default function NewIssuePage() {
     setIsUploading(true);
     try {
       const formData = new FormData();
-      formData.append("file", files[0]); // Single file upload for now, loop for multiple
+      formData.append("file", files[0]); 
 
       const response = await api.post("/upload/", formData, {
         headers: { "Content-Type": "multipart/form-data" },
@@ -84,12 +123,11 @@ export default function NewIssuePage() {
       alert("アップロードに失敗しました");
     } finally {
       setIsUploading(false);
-      // Reset input
       e.target.value = "";
     }
   };
 
-  // Mock Voice Input
+  // Mock Voice Input (Same as NewIssuePage)
   const startVoiceInput = () => {
     if (!('webkitSpeechRecognition' in window)) {
       alert("お使いのブラウザは音声入力に対応していません。");
@@ -121,7 +159,7 @@ export default function NewIssuePage() {
     recognition.start();
   };
 
-  const onSubmit = async (data: NewIssueForm, status: "untouched" | "draft" = "untouched") => {
+  const onSubmit = async (data: EditIssueForm, status: "untouched" | "draft") => {
     setIsSubmitting(true);
     try {
       // Filter out empty ingredients
@@ -129,28 +167,34 @@ export default function NewIssuePage() {
         (ing) => ing.name.trim() !== "" && ing.amount.trim() !== ""
       );
 
-      // Prepare payload
       const payload = {
         ...data,
         ingredients: validIngredients,
         status: status,
-        // Ensure deadline format or null
         desired_deadline: data.desired_deadline ? data.desired_deadline : null,
       };
 
-      await api.post("/issues", payload);
+      await api.put(`/issues/${id}`, payload);
       router.push("/client/issues");
     } catch (error) {
-      console.error("Failed to create issue", error);
-      alert("登録に失敗しました");
+      console.error("Failed to update issue", error);
+      alert("更新に失敗しました");
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  if (isLoading) return <div>読み込み中...</div>;
+
   return (
     <div className="max-w-3xl mx-auto pb-10">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">新規課題の登録</h1>
+      <div className="flex items-center space-x-4 mb-6">
+        <Button variant="ghost" size="sm" onClick={() => router.back()}>
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          一覧に戻る
+        </Button>
+        <h1 className="text-2xl font-bold text-gray-900">課題の編集 (下書き)</h1>
+      </div>
       
       <div className="bg-white shadow-sm rounded-lg border border-gray-200 p-6">
         <form onSubmit={handleSubmit((data) => onSubmit(data, "untouched"))} className="space-y-8">
@@ -420,7 +464,7 @@ export default function NewIssuePage() {
                 下書き保存
             </Button>
             <Button type="submit" disabled={isSubmitting || isUploading} className="bg-blue-600 hover:bg-blue-700 text-white px-8">
-              {isSubmitting ? "送信中..." : "課題を登録する"}
+              {isSubmitting ? "更新する" : "課題を登録する"}
             </Button>
           </div>
         </form>

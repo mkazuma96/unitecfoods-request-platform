@@ -63,7 +63,7 @@ export default function AdminIssueListPage() {
                           {issue.title}
                         </p>
                       </div>
-                      <div className="mt-2 flex items-center text-sm text-gray-500 sm:mt-0">
+                      <div className="mt-2 flex items-center text-sm text-gray-700 sm:mt-0">
                         <p>商品名: {issue.product_name}</p>
                       </div>
                     </div>
