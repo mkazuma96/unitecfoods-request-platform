@@ -1,0 +1,60 @@
+"use client";
+
+import React, { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import api from "@/lib/api";
+import { IssueDetailView } from "@/features/issues/components/IssueDetailView";
+import { ChatWindow } from "@/features/messages/components/ChatWindow";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
+
+export default function ClientIssueDetailPage() {
+  const params = useParams();
+  const router = useRouter();
+  const id = params.id as string;
+  const [issue, setIssue] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchIssue = async () => {
+      try {
+        const response = await api.get(`/issues/${id}`);
+        setIssue(response.data);
+      } catch (error) {
+        console.error("Failed to fetch issue", error);
+        // Handle 404 or other errors
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id) {
+      fetchIssue();
+    }
+  }, [id]);
+
+  if (loading) return <div>読み込み中...</div>;
+  if (!issue) return <div>課題が見つかりません</div>;
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center space-x-4">
+        <Button variant="ghost" size="sm" onClick={() => router.back()}>
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          一覧に戻る
+        </Button>
+        <h1 className="text-2xl font-bold text-gray-900">課題詳細</h1>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2 space-y-6">
+          <IssueDetailView issue={issue} />
+        </div>
+        <div className="lg:col-span-1">
+          <ChatWindow issueId={Number(id)} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
