@@ -1,15 +1,15 @@
 import logging
 from sqlalchemy.orm import Session
-from app.db.session import engine, SessionLocal
-from app.models.user import Base, User, Company, UserRole, CompanyType
-# Import Issue to ensure models are registered
-from app.models.issue import Issue 
+
+from app.db.session import SessionLocal
+from app.models.user import User, Company, UserRole, CompanyType
+from app.models.issue import Issue # Import Issue to ensure SQLAlchemy registry is populated
 from app.core.security import get_password_hash
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def create_initial_data(db: Session) -> None:
+def init_db(db: Session) -> None:
     # 1. Create Companies
     unitec = db.query(Company).filter(Company.name == "Unitec Foods").first()
     if not unitec:
@@ -52,27 +52,26 @@ def create_initial_data(db: Session) -> None:
         db.commit()
         logger.info("Created User: admin@unitec.com (Pass: admin123)")
 
-    # Client User (Client Admin)
+    # Client User
     client_user = db.query(User).filter(User.email == "user@client-a.com").first()
     if not client_user:
         client_user = User(
             email="user@client-a.com",
             password_hash=get_password_hash("client123"),
-            name="Client A User", # This can be "Main Account" or specific name
-            role=UserRole.CLIENT_ADMIN, # Changed to CLIENT_ADMIN
+            name="Client A User",
+            role=UserRole.CLIENT_MEMBER,
             company_id=client_a.id
         )
         db.add(client_user)
         db.commit()
-        logger.info("Created User: user@client-a.com (Pass: client123, Role: CLIENT_ADMIN)")
+        logger.info("Created User: user@client-a.com (Pass: client123)")
 
-def init_db():
-    # Create tables
-    Base.metadata.create_all(bind=engine)
-    
-    # Create initial data
+def main() -> None:
+    logger.info("Creating initial data")
     db = SessionLocal()
-    try:
-        create_initial_data(db)
-    finally:
-        db.close()
+    init_db(db)
+    logger.info("Initial data created")
+
+if __name__ == "__main__":
+    main()
+

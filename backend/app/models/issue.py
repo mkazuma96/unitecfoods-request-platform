@@ -6,6 +6,7 @@ import enum
 
 # Enums
 class IssueStatus(str, enum.Enum):
+    DRAFT = "draft"       # Added Draft
     UNTOUCHED = "untouched"
     IN_PROGRESS = "in_progress"
     ON_HOLD = "on_hold"
@@ -59,6 +60,7 @@ class Issue(Base):
     messages = relationship("Message", back_populates="issue", cascade="all, delete-orphan")
     internal_notes = relationship("InternalNote", back_populates="issue", cascade="all, delete-orphan")
     additional_questions = relationship("AdditionalQuestion", back_populates="issue", cascade="all, delete-orphan")
+    attachments = relationship("Attachment", back_populates="issue", cascade="all, delete-orphan")
 
 
 class Ingredient(Base):
@@ -112,3 +114,15 @@ class AdditionalQuestion(Base):
 
     issue = relationship("Issue", back_populates="additional_questions")
 
+
+class Attachment(Base):
+    __tablename__ = "attachments"
+
+    id = Column(Integer, primary_key=True, index=True)
+    issue_id = Column(Integer, ForeignKey("issues.id"))
+    file_name = Column(String)
+    file_path = Column(String) # Stored path or URL
+    file_type = Column(String, nullable=True) # MIME type
+    uploaded_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    issue = relationship("Issue", back_populates="attachments")

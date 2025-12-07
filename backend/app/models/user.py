@@ -37,7 +37,9 @@ class User(Base):
     email = Column(String, unique=True, index=True)
     password_hash = Column(String)
     name = Column(String)
+    is_active = Column(Boolean, default=True) # Added is_active
     role = Column(SQLEnum(UserRole), default=UserRole.CLIENT_MEMBER)
+    invitation_token = Column(String, nullable=True, index=True) # Added for invitation flow
     company_id = Column(Integer, ForeignKey("companies.id"))
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 

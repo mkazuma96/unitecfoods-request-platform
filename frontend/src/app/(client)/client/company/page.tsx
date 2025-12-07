@@ -1,0 +1,103 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import api from "@/lib/api";
+import { UserRole } from "@/types"; // We might need to define this or just use string
+
+type User = {
+    id: number;
+    email: string;
+    name: string;
+    role: string;
+};
+
+type Company = {
+    id: number;
+    name: string;
+    representative_email: string;
+    address_default: string;
+    users: User[];
+};
+
+export default function CompanyInfoPage() {
+    const [company, setCompany] = useState<Company | null>(null);
+    const [currentUser, setCurrentUser] = useState<User | null>(null);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const companyRes = await api.get("/users/company");
+                setCompany(companyRes.data);
+                const userRes = await api.get("/users/me");
+                setCurrentUser(userRes.data);
+            } catch (e) {
+                console.error(e);
+            }
+        };
+        fetchData();
+    }, []);
+
+    if (!company) return <div>読み込み中...</div>;
+
+    return (
+        <div className="max-w-4xl mx-auto space-y-6">
+            <h1 className="text-2xl font-bold text-gray-900">企業情報</h1>
+            
+            <div className="bg-white shadow overflow-hidden sm:rounded-lg border border-gray-200">
+                <div className="px-4 py-5 sm:px-6">
+                    <h3 className="text-lg leading-6 font-medium text-gray-900">基本情報</h3>
+                    <p className="mt-1 max-w-2xl text-sm text-gray-500">Unitec Foodsに登録されている企業情報です。</p>
+                </div>
+                <div className="border-t border-gray-200">
+                    <dl>
+                        <div className="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                            <dt className="text-sm font-medium text-gray-500">会社名</dt>
+                            <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{company.name}</dd>
+                        </div>
+                        <div className="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                            <dt className="text-sm font-medium text-gray-500">代表メールアドレス</dt>
+                            <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{company.representative_email}</dd>
+                        </div>
+                        <div className="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                            <dt className="text-sm font-medium text-gray-500">住所</dt>
+                            <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{company.address_default || "-"}</dd>
+                        </div>
+                    </dl>
+                </div>
+            </div>
+
+            {/* 担当者一覧 (Optional for MVP but good to have) */}
+            <div className="bg-white shadow overflow-hidden sm:rounded-lg border border-gray-200">
+                <div className="px-4 py-5 sm:px-6 flex justify-between items-center">
+                    <div>
+                        <h3 className="text-lg leading-6 font-medium text-gray-900">担当者一覧</h3>
+                        <p className="mt-1 max-w-2xl text-sm text-gray-500">登録されているアカウント一覧です。</p>
+                    </div>
+                </div>
+                <ul className="divide-y divide-gray-200">
+                    {company.users.map((user) => (
+                        <li key={user.id} className="px-4 py-4 sm:px-6 flex items-center justify-between hover:bg-gray-50">
+                            <div className="flex items-center">
+                                <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">
+                                    {user.name ? user.name.slice(0, 1).toUpperCase() : "U"}
+                                </div>
+                                <div className="ml-4">
+                                    <div className="text-sm font-medium text-gray-900">{user.name}</div>
+                                    <div className="text-sm text-gray-500">{user.email}</div>
+                                </div>
+                            </div>
+                            <div>
+                                <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                                    user.role === 'CLIENT_ADMIN' ? 'bg-purple-100 text-purple-800' : 'bg-green-100 text-green-800'
+                                }`}>
+                                    {user.role === 'CLIENT_ADMIN' ? 'メイン' : '担当者'}
+                                </span>
+                            </div>
+                        </li>
+                    ))}
+                </ul>
+            </div>
+        </div>
+    );
+}
+
