@@ -1,22 +1,81 @@
 @import "tailwindcss";
 
+@theme {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
 :root {
+  /* Brand Colors from Manual & Image */
+  --unitec-yellow: #FFD200; /* Pantone 116C - Updated to match tailwind config */
+  --unitec-blue-gray: #6E7891; /* Pantone 430C */
+  --unitec-gray: #3C3C3C; /* Pantone Black 7C */
+  --unitec-dark-blue: #002B5C; /* Deep Blue from Login Image */
+
+  /* Base */
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: var(--unitec-gray);
+
+  /* Shadcn UI Mapping */
+  --card: #ffffff;
+  --card-foreground: var(--unitec-gray);
+  
+  --popover: #ffffff;
+  --popover-foreground: var(--unitec-gray);
+  
+  /* Changed Primary to Dark Blue to match Login Image tonality */
+  --primary: var(--unitec-dark-blue);
+  --primary-foreground: #ffffff; 
+  
+  --secondary: #f3f4f6;
+  --secondary-foreground: var(--unitec-gray);
+  
+  --muted: #f3f4f6;
+  --muted-foreground: #6b7280;
+  
+  --accent: #f3f4f6;
+  --accent-foreground: var(--unitec-gray);
+  
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  
+  --border: #e5e7eb;
+  --input: #e5e7eb;
+  --ring: var(--unitec-dark-blue); /* Focus ring matches primary */
+  
+  --radius: 0.5rem;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  /* Custom Utility Colors */
+  --color-unitec-yellow: var(--unitec-yellow);
+  --color-unitec-blue-gray: var(--unitec-blue-gray);
+  --color-unitec-gray: var(--unitec-gray);
+  --color-unitec-dark-blue: var(--unitec-dark-blue);
 }
 
 body {

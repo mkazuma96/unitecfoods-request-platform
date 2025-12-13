@@ -89,10 +89,12 @@ class IssueListSummary(BaseModel):
     status: IssueStatus
     category: str
     urgency: Urgency
+    desired_deadline: Optional[date] = None # Added desired_deadline
     ball_holder: BallHolder
     created_at: datetime
     product_name: str
     company_name: Optional[str] = None
+    creator_name: Optional[str] = None # Added creator_name for list view
     
     class Config:
         from_attributes = True

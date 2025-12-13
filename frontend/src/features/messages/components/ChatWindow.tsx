@@ -87,7 +87,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ issueId, isAdmin = false
             return (
               <div key={msg.id} className={`flex flex-col ${isUnitecSender ? 'items-start' : 'items-end'}`}>
                 <div className="flex items-baseline space-x-2 mb-1">
-                  <span className={`text-xs font-bold ${isUnitecSender ? 'text-blue-800' : 'text-green-800'}`}>
+                  <span className={`text-xs font-bold ${isUnitecSender ? 'text-unitec-blue-gray' : 'text-unitec-gray'}`}>
                     {msg.sender_name}
                   </span>
                   <span className="text-xs text-gray-400">{new Date(msg.sent_at).toLocaleString()}</span>
@@ -95,8 +95,8 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ issueId, isAdmin = false
                 <div className={`
                   max-w-[85%] p-4 rounded-2xl shadow-sm text-base whitespace-pre-wrap
                   ${isUnitecSender 
-                    ? 'bg-blue-50 text-blue-900 rounded-tl-none border border-blue-100' 
-                    : 'bg-white text-gray-900 rounded-tr-none border border-gray-200'}
+                    ? 'bg-gray-100 text-unitec-gray rounded-tl-none border border-gray-200' 
+                    : 'bg-white text-unitec-gray rounded-tr-none border border-gray-200'}
                 `}>
                   {msg.content}
                 </div>
@@ -112,12 +112,12 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ issueId, isAdmin = false
         <form onSubmit={handleSubmit(onSubmit)} className="flex gap-3">
           <input
             type="text"
-            className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border p-3 text-base text-gray-900"
+            className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-unitec-yellow focus:ring-unitec-yellow border p-3 text-base text-gray-900"
             placeholder="メッセージを入力..."
             autoComplete="off"
             {...register("content")}
           />
-          <Button type="submit" className="px-6 bg-blue-600 hover:bg-blue-700 text-white font-bold">送信</Button>
+          <Button type="submit" className="px-6 font-bold bg-[#002B5C] hover:bg-[#002244] text-white">送信</Button>
         </form>
       </div>
     </div>

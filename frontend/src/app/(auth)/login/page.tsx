@@ -7,7 +7,6 @@ import { z } from "zod";
 import { useRouter } from "next/navigation";
 import api from "@/lib/api";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
 
 // Validation Schema
 const loginSchema = z.object({
@@ -35,7 +34,6 @@ export default function LoginPage() {
     setError(null);
 
     try {
-      // URLSearchParams for x-www-form-urlencoded
       const params = new URLSearchParams();
       params.append("username", data.email);
       params.append("password", data.password);
@@ -47,12 +45,8 @@ export default function LoginPage() {
       });
 
       const { access_token } = response.data;
-      
-      // Save token
       localStorage.setItem("token", access_token);
       
-      // Redirect (For MVP, simple redirect based on email domain or role assumption)
-      // Ideally, we should fetch /users/me to check role
       if (data.email.includes("unitec")) {
           router.push("/admin/dashboard");
       } else {
@@ -68,48 +62,65 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-xl shadow-lg">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8">
+        
+        {/* Header Section */}
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-gray-900">Unitec Foods</h1>
-          <p className="mt-2 text-sm text-gray-600">R&D Request Platform</p>
+          <h1 className="text-3xl font-bold text-unitec-dark-blue tracking-wider uppercase">
+            UNITEC FOODS
+          </h1>
+          <div className="flex justify-center mt-2 mb-8">
+             <div className="h-1 w-16 bg-unitec-dark-blue"></div>
+             <div className="h-1 w-16 bg-unitec-yellow"></div>
+          </div>
+          
+          <h2 className="text-xl font-bold text-gray-800">
+            食品開発ナレッジプラットフォーム
+          </h2>
+          <p className="mt-2 text-sm text-gray-600">
+            ログインしてご利用ください
+          </p>
         </div>
         
         <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
-          <div className="space-y-4">
+          <div className="rounded-md shadow-sm -space-y-px">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-900">
-                メールアドレス
+              <label htmlFor="email" className="sr-only">
+                ユーザー名
               </label>
               <input
                 id="email"
                 type="email"
                 autoComplete="email"
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 text-base text-gray-900 placeholder-gray-500"
-                placeholder="user@example.com"
+                required
+                className="appearance-none rounded-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-unitec-dark-blue focus:border-unitec-dark-blue focus:z-10 text-base"
+                placeholder="ユーザー名 (メールアドレス)"
                 {...register("email")}
               />
-              {errors.email && (
-                <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
-              )}
             </div>
-
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-900">
+              <label htmlFor="password" className="sr-only">
                 パスワード
               </label>
               <input
                 id="password"
                 type="password"
                 autoComplete="current-password"
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 text-base text-gray-900 placeholder-gray-500"
+                required
+                className="appearance-none rounded-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-unitec-dark-blue focus:border-unitec-dark-blue focus:z-10 text-base"
+                placeholder="パスワード"
                 {...register("password")}
               />
-              {errors.password && (
-                <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
-              )}
             </div>
           </div>
+
+          {(errors.email || errors.password) && (
+             <div className="text-sm text-red-600 space-y-1">
+                {errors.email && <p>{errors.email.message}</p>}
+                {errors.password && <p>{errors.password.message}</p>}
+             </div>
+          )}
 
           {error && (
             <div className="rounded-md bg-red-50 p-4">
@@ -125,10 +136,17 @@ export default function LoginPage() {
             <Button
               type="submit"
               disabled={isLoading}
-              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-bold text-white bg-[#002B5C] hover:bg-[#002244] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#002B5C]"
             >
               {isLoading ? "ログイン中..." : "ログイン"}
             </Button>
+          </div>
+
+          {/* Helper Info */}
+          <div className="text-center text-xs text-gray-400 mt-8 space-y-1">
+             <p className="font-medium">初期アカウント</p>
+             <p>admin@unitec.com / admin123</p>
+             <p>user@client-a.com / client123</p>
           </div>
         </form>
       </div>

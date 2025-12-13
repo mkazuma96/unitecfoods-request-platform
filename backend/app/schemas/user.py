@@ -68,3 +68,9 @@ class CompanyRead(CompanyBase):
 
     class Config:
         from_attributes = True
+
+class CompanyCreate(BaseModel):
+    name: str
+    representative_email: EmailStr
+    representative_name: str
+    address_default: Optional[str] = None

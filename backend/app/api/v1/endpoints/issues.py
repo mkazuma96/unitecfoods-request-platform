@@ -33,7 +33,10 @@ def read_issues(
         # Client Side: Filter by company
         query = query.filter(Issue.company_id == current_user.company_id)
     
-    issues = query.options(joinedload(Issue.company)).order_by(Issue.created_at.desc()).offset(skip).limit(limit).all()
+    issues = query.options(
+        joinedload(Issue.company),
+        joinedload(Issue.creator) # Added
+    ).order_by(Issue.created_at.desc()).offset(skip).limit(limit).all()
 
     # Map to schema manually if needed, or rely on Pydantic's from_attributes if property exists
     # Issue model has .company relationship, so issue.company.name should be accessible.
@@ -46,6 +49,8 @@ def read_issues(
         issue_data = IssueListSummary.model_validate(issue)
         if issue.company:
             issue_data.company_name = issue.company.name
+        if issue.creator:
+            issue_data.creator_name = issue.creator.name
         result.append(issue_data)
 
     return result

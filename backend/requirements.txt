@@ -8,3 +8,5 @@ psycopg2-binary==2.9.11
 passlib[bcrypt]==1.7.4
 python-jose[cryptography]==3.3.0
 bcrypt==3.2.0
+mysqlclient==2.2.4
+cryptography==42.0.5

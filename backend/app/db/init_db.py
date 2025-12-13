@@ -1,9 +1,9 @@
 import logging
+import datetime
 from sqlalchemy.orm import Session
 from app.db.session import engine, SessionLocal
 from app.models.user import Base, User, Company, UserRole, CompanyType
-# Import Issue to ensure models are registered
-from app.models.issue import Issue 
+from app.models.issue import Issue, IssueStatus, Urgency
 from app.core.security import get_password_hash
 
 logging.basicConfig(level=logging.INFO)
@@ -17,7 +17,7 @@ def create_initial_data(db: Session) -> None:
             name="Unitec Foods",
             representative_email="admin@unitecfoods.co.jp",
             type=CompanyType.UNITEC,
-            address_default="東京都中央区..."
+            address_default="東京都中央区日本橋..."
         )
         db.add(unitec)
         db.commit()
@@ -50,6 +50,7 @@ def create_initial_data(db: Session) -> None:
         )
         db.add(admin_user)
         db.commit()
+        db.refresh(admin_user)
         logger.info("Created User: admin@unitec.com (Pass: admin123)")
 
     # Client User (Client Admin)
@@ -58,13 +59,50 @@ def create_initial_data(db: Session) -> None:
         client_user = User(
             email="user@client-a.com",
             password_hash=get_password_hash("client123"),
-            name="Client A User", # This can be "Main Account" or specific name
-            role=UserRole.CLIENT_ADMIN, # Changed to CLIENT_ADMIN
+            name="佐藤 健",
+            role=UserRole.CLIENT_ADMIN,
             company_id=client_a.id
         )
         db.add(client_user)
         db.commit()
+        db.refresh(client_user)
         logger.info("Created User: user@client-a.com (Pass: client123, Role: CLIENT_ADMIN)")
+    
+    # 3. Create Issues (Sample Data)
+    if db.query(Issue).count() == 0:
+        issue1 = Issue(
+            issue_code="REQ-001",
+            title="低糖質クッキーの食感改善",
+            description="現在開発中の低糖質クッキーですが、どうしてもボソボソとした食感になってしまいます。\nしっとりとした食感を出すための添加剤や配合の提案をお願いしたいです。\n\nターゲット層：20-40代女性\n現状の課題：焼成後の水分保持力が低い",
+            status=IssueStatus.UNTOUCHED,
+            urgency=Urgency.HIGH,
+            product_name="ロカボクッキー",
+            category="texture",
+            company_id=client_a.id,
+            creator_id=client_user.id,
+            desired_deadline=datetime.date.today() + datetime.timedelta(days=7),
+            is_sample_provided=True,
+            sample_shipping_info="ヤマト運輸 1234-5678-9012"
+        )
+        db.add(issue1)
+
+        issue2 = Issue(
+            issue_code="REQ-002",
+            title="新商品向けイチゴフレーバーの提案",
+            description="春向けの新商品として、桜餅のような和風のイチゴフレーバーを探しています。\nコストは抑えめでお願いします。",
+            status=IssueStatus.IN_PROGRESS,
+            urgency=Urgency.MIDDLE,
+            product_name="春の桜餅風アイス",
+            category="flavor",
+            company_id=client_a.id,
+            creator_id=client_user.id,
+            desired_deadline=datetime.date.today() + datetime.timedelta(days=14),
+            is_sample_provided=False
+        )
+        db.add(issue2)
+        
+        db.commit()
+        logger.info("Created Sample Issues")
 
 def init_db():
     # Create tables

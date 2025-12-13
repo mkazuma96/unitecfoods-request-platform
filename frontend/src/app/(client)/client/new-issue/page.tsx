@@ -149,7 +149,7 @@ export default function NewIssuePage() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto pb-10">
+    <div className="max-w-4xl mx-auto pb-10">
       <h1 className="text-2xl font-bold text-gray-900 mb-6">新規課題の登録</h1>
       
       <div className="bg-white shadow-sm rounded-lg border border-gray-200 p-6">
@@ -366,7 +366,7 @@ export default function NewIssuePage() {
                   <div className="space-y-1 text-center">
                     <Upload className="mx-auto h-12 w-12 text-gray-400" />
                     <div className="flex text-sm text-gray-600 justify-center">
-                      <label htmlFor="file-upload" className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none">
+                      <label htmlFor="file-upload" className="relative cursor-pointer bg-white rounded-md font-medium text-[#002B5C] hover:text-[#002244] focus-within:outline-none">
                         <span>{isUploading ? "アップロード中..." : "ファイルをアップロード"}</span>
                         <input 
                             id="file-upload" 
@@ -419,7 +419,7 @@ export default function NewIssuePage() {
             >
                 下書き保存
             </Button>
-            <Button type="submit" disabled={isSubmitting || isUploading} className="bg-blue-600 hover:bg-blue-700 text-white px-8">
+            <Button type="submit" disabled={isSubmitting || isUploading} className="bg-[#002B5C] hover:bg-[#002244] text-white px-8">
               {isSubmitting ? "送信中..." : "課題を登録する"}
             </Button>
           </div>

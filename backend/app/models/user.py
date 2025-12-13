@@ -45,7 +45,7 @@ class User(Base):
 
     company = relationship("Company", back_populates="users")
     # Issues created by this user
-    created_issues = relationship("Issue", foreign_keys="[Issue.creator_id]", back_populates="creator")
+    created_issues = relationship("Issue", foreign_keys="Issue.creator_id", back_populates="creator")
     # Issues assigned to this user (Unitec side)
-    assigned_issues = relationship("Issue", foreign_keys="[Issue.assignee_id]", back_populates="assignee")
+    assigned_issues = relationship("Issue", foreign_keys="Issue.assignee_id", back_populates="assignee")
 

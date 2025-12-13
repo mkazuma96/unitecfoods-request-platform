@@ -6,6 +6,7 @@ venv/
 .env
 *.db
 .DS_Store
+backend/uploads/
 
 # Node / Frontend
 node_modules/
@@ -23,4 +24,3 @@ yarn-error.log*
 # Editor
 .vscode/
 .idea/
-
