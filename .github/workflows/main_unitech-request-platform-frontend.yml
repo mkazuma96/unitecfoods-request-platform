@@ -37,16 +37,25 @@ jobs:
           # スタンドアロンビルドの成果物（server.js と node_modules）をコピー
           cp -r frontend/.next/standalone/* deploy_package/
           
-          # .next フォルダ全体をコピー（BUILD_ID、cache、その他必要なファイルを含む）
-          cp -r frontend/.next deploy_package/
+          # .next フォルダを next-build という名前でコピー（隠しファイル問題を回避）
+          cp -r frontend/.next deploy_package/next-build
           
           # standalone フォルダは不要なので削除
-          rm -rf deploy_package/.next/standalone
+          rm -rf deploy_package/next-build/standalone
           
           # publicフォルダのコピー（必須）
           if [ -d "frontend/public" ]; then
             cp -r frontend/public deploy_package/
           fi
+          
+          # 起動スクリプトを作成
+          echo '#!/bin/sh' > deploy_package/start.sh
+          echo 'cd /home/site/wwwroot' >> deploy_package/start.sh
+          echo 'if [ ! -d ".next" ]; then' >> deploy_package/start.sh
+          echo '  mv next-build .next' >> deploy_package/start.sh
+          echo 'fi' >> deploy_package/start.sh
+          echo 'node server.js' >> deploy_package/start.sh
+          chmod +x deploy_package/start.sh
 
       - name: Upload artifact for deployment jobs
         uses: actions/upload-artifact@v4
