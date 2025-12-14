@@ -34,14 +34,26 @@ jobs:
         run: |
           mkdir deploy_package
           
+          # デバッグ：ビルド後の .next の存在を確認
+          echo "=== Checking .next folder ==="
+          ls -la frontend/.next
+          echo "=== BUILD_ID ==="
+          cat frontend/.next/BUILD_ID
+          
           # スタンドアロンビルドの成果物（server.js と node_modules）をコピー
           cp -r frontend/.next/standalone/* deploy_package/
           
-          # .next フォルダを next-build という名前でコピー（隠しファイル問題を回避）
-          cp -r frontend/.next deploy_package/next-build
+          # .next フォルダを dotNext という名前でコピー（隠しファイル問題を完全回避）
+          cp -r frontend/.next deploy_package/dotNext
+          
+          # デバッグ：コピー後の確認
+          echo "=== Checking dotNext folder ==="
+          ls -la deploy_package/dotNext
+          echo "=== dotNext BUILD_ID ==="
+          cat deploy_package/dotNext/BUILD_ID
           
           # standalone フォルダは不要なので削除
-          rm -rf deploy_package/next-build/standalone
+          rm -rf deploy_package/dotNext/standalone
           
           # publicフォルダのコピー（必須）
           if [ -d "frontend/public" ]; then
@@ -52,10 +64,15 @@ jobs:
           echo '#!/bin/sh' > deploy_package/start.sh
           echo 'cd /home/site/wwwroot' >> deploy_package/start.sh
           echo 'if [ ! -d ".next" ]; then' >> deploy_package/start.sh
-          echo '  mv next-build .next' >> deploy_package/start.sh
+          echo '  echo "Renaming dotNext to .next"' >> deploy_package/start.sh
+          echo '  mv dotNext .next' >> deploy_package/start.sh
           echo 'fi' >> deploy_package/start.sh
           echo 'node server.js' >> deploy_package/start.sh
           chmod +x deploy_package/start.sh
+          
+          # デバッグ：最終的なパッケージ内容
+          echo "=== Final deploy_package contents ==="
+          ls -la deploy_package/
 
       - name: Upload artifact for deployment jobs
         uses: actions/upload-artifact@v4
