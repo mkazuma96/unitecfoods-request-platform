@@ -8,6 +8,9 @@ on:
   push:
     branches:
       - main
+    paths:  # この行を追加
+      - 'backend/**' # この行を追加
+      - '.github/workflows/main_unitech-request-platform-backend.yml' # ワークフロー自体の変更も含める
   workflow_dispatch:
 
 # ... (前略) ...
@@ -72,3 +75,4 @@ jobs:
           # package: backend  <-- これを削除！
           # 今回は deploy_package の中身（つまり backend の中身）がルートに展開されるため、
           # package 指定は不要（または . ）になります。
+
