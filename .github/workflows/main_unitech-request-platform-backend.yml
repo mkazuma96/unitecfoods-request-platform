@@ -10,11 +10,13 @@ on:
       - main
   workflow_dispatch:
 
+# ... (前略) ...
+
 jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: read #This is required for actions/checkout
+      contents: read
 
     steps:
       - uses: actions/checkout@v4
@@ -24,25 +26,31 @@ jobs:
         with:
           python-version: '3.11'
 
-      # 🛠️ Local Build Section
+      # デバッグ用：ファイル一覧を表示して構造を確認
+      - name: List files
+        run: ls -R
+
       - name: Create and Start virtual environment and Install dependencies
-        working-directory: ./backend  # ここが重要：backendディレクトリで実行
+        working-directory: backend  # ./backend ではなく backend にしてみる
         run: |
           python -m venv antenv
           source antenv/bin/activate
           pip install -r requirements.txt
-                
+      
+      # 変更点：デプロイ用のファイルを一時ディレクトリに集める
+      - name: Prepare artifact
+        run: |
+          mkdir deploy_package
+          cp -r backend/* deploy_package/
+          # 不要なファイルを除外（必要なら）
+          rm -rf deploy_package/antenv
+          rm -rf deploy_package/__pycache__
+
       - name: Upload artifact for deployment jobs
         uses: actions/upload-artifact@v4
         with:
           name: python-app
-          path: |
-            ./backend/  # ここが重要：backendディレクトリをアップロード
-            !./backend/antenv/
-            !./backend/__pycache__/
-            !./backend/*.pyc
-            !./backend/*.pyo
-            !./backend/*.pyd
+          path: deploy_package/  # 作成した一時ディレクトリを指定
 
   deploy:
     runs-on: ubuntu-latest
@@ -61,5 +69,6 @@ jobs:
           app-name: 'unitech-request-platform-backend'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_A593859AE8E940AEA36A71D3AB56810D }}
-          package: backend  # ここが重要：デプロイ対象を指定
-
+          # package: backend  <-- これを削除！
+          # 今回は deploy_package の中身（つまり backend の中身）がルートに展開されるため、
+          # package 指定は不要（または . ）になります。
