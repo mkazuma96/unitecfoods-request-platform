@@ -34,29 +34,14 @@ jobs:
         run: |
           mkdir deploy_package
           
-          # デバッグ用：ディレクトリ構造を確認
-          echo "Structure of .next/standalone:"
-          ls -R frontend/.next/standalone
+          # スタンドアロンビルドの成果物（server.js と node_modules）をコピー
+          cp -r frontend/.next/standalone/* deploy_package/
           
-          # スタンドアロンビルドの成果物をコピー
-          # Next.js の standalone モードは、プロジェクト名（frontend）のサブフォルダを作ることがあるため、
-          # そこから server.js を探してコピーします。
+          # .next フォルダ全体をコピー（BUILD_ID、cache、その他必要なファイルを含む）
+          cp -r frontend/.next deploy_package/
           
-          if [ -d "frontend/.next/standalone/frontend" ]; then
-            echo "Found nested frontend directory. Copying from there..."
-            cp -r frontend/.next/standalone/frontend/* deploy_package/
-            # node_modules も必要ならコピー（通常はルートのものが使われるが念の為）
-            if [ -d "frontend/.next/standalone/node_modules" ]; then
-               cp -r frontend/.next/standalone/node_modules deploy_package/
-            fi
-          else
-            echo "Copying from root of standalone..."
-            cp -r frontend/.next/standalone/* deploy_package/
-          fi
-          
-          # 静的ファイル(.next/static)のコピー（必須）
-          mkdir -p deploy_package/.next/static
-          cp -r frontend/.next/static/* deploy_package/.next/static/
+          # standalone フォルダは不要なので削除
+          rm -rf deploy_package/.next/standalone
           
           # publicフォルダのコピー（必須）
           if [ -d "frontend/public" ]; then
