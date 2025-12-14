@@ -7,15 +7,15 @@ on:
   push:
     branches:
       - main
-    paths:  # この行を追加
-      - 'frontend/**' # この行を追加
-      - '.github/workflows/main_unitech-request-platform-frontend.yml' # ワークフロー自体の変更も含める
+    paths:
+      - 'frontend/**'
+      - '.github/workflows/main_unitech-request-platform-frontend.yml'
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
-# ... (前略) ...
+
     steps:
       - uses: actions/checkout@v4
 
@@ -33,16 +33,17 @@ jobs:
       - name: Prepare artifact
         run: |
           mkdir deploy_package
-          # frontendの中身を全てコピー（node_modulesも含む！）
-          cp -r frontend/* deploy_package/
-          # 隠しファイル(.next, .envなど)も明示的にコピー
-          cp -r frontend/.next deploy_package/ || true
-          cp -r frontend/.env* deploy_package/ || true
           
-          # node_modules も確実にコピーするために明示的に指定
-          # (cp -r frontend/* で入っているはずですが念の為)
-          if [ -d "frontend/node_modules" ]; then
-            cp -r frontend/node_modules deploy_package/
+          # スタンドアロンビルドの成果物をコピー
+          cp -r frontend/.next/standalone/* deploy_package/
+          
+          # 静的ファイル(.next/static)のコピー（必須）
+          mkdir -p deploy_package/.next/static
+          cp -r frontend/.next/static/* deploy_package/.next/static/
+          
+          # publicフォルダのコピー（必須）
+          if [ -d "frontend/public" ]; then
+            cp -r frontend/public deploy_package/
           fi
 
       - name: Upload artifact for deployment jobs
@@ -50,8 +51,6 @@ jobs:
         with:
           name: node-app
           path: deploy_package/
-
-# ... (後略: deployジョブはそのまま) ...
 
   deploy:
     runs-on: ubuntu-latest
@@ -69,7 +68,4 @@ jobs:
         with:
           app-name: 'unitech-request-platform-frontend'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_5C74C72FD2064BF2B9B3BE7B59D1F76B}} # 変数名はご自身の環境のもの（元のファイルにあるもの）を確認してください！
-          # package: .  <-- package指定は削除でOK（デフォルトでルートがデプロイされる）
-
-
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_5C74C72FD2064BF2B9B3BE7B59D1F76B }}
