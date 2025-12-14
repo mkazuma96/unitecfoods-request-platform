@@ -7,6 +7,9 @@ on:
   push:
     branches:
       - main
+    paths:  # この行を追加
+      - 'frontend/**' # この行を追加
+      - '.github/workflows/main_unitech-request-platform-frontend.yml' # ワークフロー自体の変更も含める
   workflow_dispatch:
 
 jobs:
@@ -70,3 +73,4 @@ jobs:
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_5C74C72FD2064BF2B9B3BE7B59D1F76B}} # 変数名はご自身の環境のもの（元のファイルにあるもの）を確認してください！
           # package: .  <-- package指定は削除でOK（デフォルトでルートがデプロイされる）
+
