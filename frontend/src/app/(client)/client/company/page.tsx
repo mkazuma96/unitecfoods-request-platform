@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import api from "@/lib/api";
-import { UserRole } from "@/types"; // We might need to define this or just use string
+// UserRole is not used
 
 type User = {
     id: number;
