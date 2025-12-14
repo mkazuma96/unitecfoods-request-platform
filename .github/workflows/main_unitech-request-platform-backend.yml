@@ -37,12 +37,12 @@ jobs:
         with:
           name: python-app
           path: |
-            backend/  # ここが重要：backendディレクトリをアップロード
-            !backend/antenv/
-            !backend/__pycache__/
-            !backend/*.pyc
-            !backend/*.pyo
-            !backend/*.pyd
+            ./backend/  # ここが重要：backendディレクトリをアップロード
+            !./backend/antenv/
+            !./backend/__pycache__/
+            !./backend/*.pyc
+            !./backend/*.pyo
+            !./backend/*.pyd
 
   deploy:
     runs-on: ubuntu-latest
@@ -62,3 +62,4 @@ jobs:
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_A593859AE8E940AEA36A71D3AB56810D }}
           package: backend  # ここが重要：デプロイ対象を指定
+
