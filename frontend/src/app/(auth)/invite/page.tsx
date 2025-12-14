@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -18,7 +18,7 @@ const inviteSchema = z.object({
 
 type InviteFormValues = z.infer<typeof inviteSchema>;
 
-export default function AcceptInvitePage() {
+function AcceptInviteContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
@@ -149,3 +149,10 @@ export default function AcceptInvitePage() {
   );
 }
 
+export default function AcceptInvitePage() {
+  return (
+    <Suspense fallback={<div>読み込み中...</div>}>
+      <AcceptInviteContent />
+    </Suspense>
+  );
+}
