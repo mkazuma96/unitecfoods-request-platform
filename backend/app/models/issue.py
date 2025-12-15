@@ -27,7 +27,7 @@ class Issue(Base):
     __tablename__ = "issues"
 
     id = Column(Integer, primary_key=True, index=True)
-    issue_code = Column(String, unique=True, index=True) # e.g. REQ-2025-0001
+    issue_code = Column(String(255), unique=True, index=True) # e.g. REQ-2025-0001
     
     company_id = Column(Integer, ForeignKey("companies.id"))
     creator_id = Column(Integer, ForeignKey("users.id"))
@@ -36,13 +36,13 @@ class Issue(Base):
     status = Column(SQLEnum(IssueStatus), default=IssueStatus.UNTOUCHED, index=True)
     ball_holder = Column(SQLEnum(BallHolder), default=BallHolder.UNITEC)
     
-    category = Column(String, index=True) # flavor, texture, etc
-    title = Column(String)
-    product_name = Column(String)
+    category = Column(String(255), index=True) # flavor, texture, etc
+    title = Column(String(255))
+    product_name = Column(String(255))
     description = Column(Text) # Includes voice-to-text content
     
     urgency = Column(SQLEnum(Urgency), default=Urgency.MIDDLE)
-    client_arbitrary_code = Column(String, nullable=True)
+    client_arbitrary_code = Column(String(255), nullable=True)
     desired_deadline = Column(Date, nullable=True)
     
     is_sample_provided = Column(Boolean, default=False)
@@ -68,8 +68,8 @@ class Ingredient(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     issue_id = Column(Integer, ForeignKey("issues.id"))
-    name = Column(String)
-    amount = Column(String)
+    name = Column(String(255))
+    amount = Column(String(255))
 
     issue = relationship("Issue", back_populates="ingredients")
 
@@ -120,9 +120,9 @@ class Attachment(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     issue_id = Column(Integer, ForeignKey("issues.id"))
-    file_name = Column(String)
-    file_path = Column(String) # Stored path or URL
-    file_type = Column(String, nullable=True) # MIME type
+    file_name = Column(String(255))
+    file_path = Column(String(500)) # Stored path or URL
+    file_type = Column(String(100), nullable=True) # MIME type
     uploaded_at = Column(DateTime(timezone=True), server_default=func.now())
 
     issue = relationship("Issue", back_populates="attachments")

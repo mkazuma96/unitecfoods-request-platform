@@ -20,8 +20,8 @@ class Company(Base):
     __tablename__ = "companies"
 
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, index=True)
-    representative_email = Column(String)
+    name = Column(String(255), index=True)
+    representative_email = Column(String(255))
     type = Column(SQLEnum(CompanyType), default=CompanyType.CLIENT)
     address_default = Column(Text, nullable=True)
     is_active = Column(Boolean, default=True)
@@ -34,12 +34,12 @@ class User(Base):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True)
-    email = Column(String, unique=True, index=True)
-    password_hash = Column(String)
-    name = Column(String)
+    email = Column(String(255), unique=True, index=True)
+    password_hash = Column(String(255))
+    name = Column(String(255))
     is_active = Column(Boolean, default=True) # Added is_active
     role = Column(SQLEnum(UserRole), default=UserRole.CLIENT_MEMBER)
-    invitation_token = Column(String, nullable=True, index=True) # Added for invitation flow
+    invitation_token = Column(String(255), nullable=True, index=True) # Added for invitation flow
     company_id = Column(Integer, ForeignKey("companies.id"))
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
