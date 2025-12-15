@@ -27,7 +27,7 @@ jobs:
       - name: npm install, build, and test
         working-directory: frontend
         env:
-          NEXT_PUBLIC_API_URL: https://unitech-request-platform-backend.azurewebsites.net
+          NEXT_PUBLIC_API_URL: https://unitech-request-platform-backend.azurewebsites.net/api/v1
         run: |
           npm install
           npm run build --if-present
@@ -101,3 +101,4 @@ jobs:
           app-name: 'unitech-request-platform-frontend'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_5C74C72FD2064BF2B9B3BE7B59D1F76B }}
+
