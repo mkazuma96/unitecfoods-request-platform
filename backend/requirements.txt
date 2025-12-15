@@ -1,6 +1,7 @@
 fastapi==0.109.2
 uvicorn==0.27.1
 pydantic==2.6.1
+email-validator==2.1.0
 python-multipart==0.0.9
 python-dotenv==1.0.1
 sqlalchemy==2.0.44
@@ -10,3 +11,4 @@ python-jose[cryptography]==3.3.0
 bcrypt==3.2.0
 mysqlclient==2.2.4
 cryptography==42.0.5
+gunicorn==23.0.0
