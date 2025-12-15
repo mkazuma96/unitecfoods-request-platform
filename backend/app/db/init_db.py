@@ -105,12 +105,19 @@ def create_initial_data(db: Session) -> None:
         logger.info("Created Sample Issues")
 
 def init_db():
-    # Create tables
-    Base.metadata.create_all(bind=engine)
+    # Create tables (with error handling for concurrent workers)
+    try:
+        Base.metadata.create_all(bind=engine)
+        logger.info("Database tables created successfully")
+    except Exception as e:
+        logger.warning(f"Table creation skipped or failed: {e}")
+        # Continue even if tables already exist
     
     # Create initial data
     db = SessionLocal()
     try:
         create_initial_data(db)
+    except Exception as e:
+        logger.error(f"Failed to create initial data: {e}")
     finally:
         db.close()
