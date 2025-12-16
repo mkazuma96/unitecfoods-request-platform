@@ -13,17 +13,23 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI(title=settings.PROJECT_NAME, version="1.0")
 
-# CORS Configuration - Use origins from settings
-# Log CORS origins for debugging
-logger.info(f"CORS Origins configured: {settings.BACKEND_CORS_ORIGINS}")
+# CORS Configuration - Temporarily allow all origins for urgent fix
+# TODO: Revert this after presentation
+cors_origins = [
+    "https://unitech-request-platform-frontend.azurewebsites.net",
+    "http://localhost:3000",
+    "http://localhost:8000",
+    "http://127.0.0.1:3000",
+]
+logger.info(f"CORS Origins configured: {cors_origins}")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.BACKEND_CORS_ORIGINS,
+    allow_origins=cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-logger.info(f"CORS middleware added with origins: {settings.BACKEND_CORS_ORIGINS}")
+logger.info(f"CORS middleware added successfully")
 
 # Mount uploads directory to /static
 if not os.path.exists("uploads"):
