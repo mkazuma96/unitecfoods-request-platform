@@ -2,7 +2,7 @@ import axios from "axios";
 
 // Create axios instance with default config
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000/api/v1",
+  baseURL: process.env.NEXT_PUBLIC_API_URL || "https://unitech-request-platform-backend.azurewebsites.net/api/v1",
   headers: {
     "Content-Type": "application/json",
   },
