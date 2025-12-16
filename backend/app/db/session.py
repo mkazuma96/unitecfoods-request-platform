@@ -9,8 +9,26 @@ load_dotenv()
 # For local development, we'll use SQLite if DATABASE_URL is not set
 SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./sql_app.db")
 
+# MySQL用の追加設定
+mysql_connect_args = {}
+engine_kwargs = {}
+
+if "sqlite" in SQLALCHEMY_DATABASE_URL:
+    # SQLite用の設定
+    mysql_connect_args = {"check_same_thread": False}
+else:
+    # MySQL用の設定
+    engine_kwargs = {
+        "pool_pre_ping": True,  # 接続を使用する前にpingして確認
+        "pool_recycle": 3600,   # 1時間ごとに接続を再作成
+        "pool_size": 10,        # コネクションプールのサイズ
+        "max_overflow": 20,     # プールが満杯時の追加接続数
+    }
+
 engine = create_engine(
-    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False} if "sqlite" in SQLALCHEMY_DATABASE_URL else {}
+    SQLALCHEMY_DATABASE_URL, 
+    connect_args=mysql_connect_args,
+    **engine_kwargs
 )
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
