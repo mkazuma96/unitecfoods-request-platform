@@ -14,6 +14,8 @@ logger = logging.getLogger(__name__)
 app = FastAPI(title=settings.PROJECT_NAME, version="1.0")
 
 # CORS Configuration - Use origins from settings
+# Log CORS origins for debugging
+logger.info(f"CORS Origins configured: {settings.BACKEND_CORS_ORIGINS}")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.BACKEND_CORS_ORIGINS,
@@ -21,6 +23,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+logger.info(f"CORS middleware added with origins: {settings.BACKEND_CORS_ORIGINS}")
 
 # Mount uploads directory to /static
 if not os.path.exists("uploads"):
