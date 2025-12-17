@@ -13,14 +13,10 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI(title=settings.PROJECT_NAME, version="1.0")
 
-# CORS Configuration - Temporarily allow all origins for urgent fix
-# TODO: Revert this after presentation
-cors_origins = [
-    "https://unitech-request-platform-frontend.azurewebsites.net",
-    "http://localhost:3000",
-    "http://localhost:8000",
-    "http://127.0.0.1:3000",
-]
+# CORS Configuration - Read from environment variables
+# ローカル: backend/.env の BACKEND_CORS_ORIGINS を使用
+# 本番: Azure App Service の環境変数 BACKEND_CORS_ORIGINS を使用
+cors_origins = settings.BACKEND_CORS_ORIGINS
 logger.info(f"CORS Origins configured: {cors_origins}")
 app.add_middleware(
     CORSMiddleware,
