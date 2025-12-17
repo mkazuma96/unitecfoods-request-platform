@@ -13,20 +13,17 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI(title=settings.PROJECT_NAME, version="1.0")
 
-# CORS Configuration - Read from environment variables
-# ローカル: backend/.env の BACKEND_CORS_ORIGINS を使用
-# 本番: Azure App Service の環境変数 BACKEND_CORS_ORIGINS を使用
-cors_origins = settings.BACKEND_CORS_ORIGINS
-logger.info(f"CORS Origins configured: {cors_origins}")
+# CORS Configuration - 緊急対応: 全オリジン許可・クレデンシャルなし
+# ブラウザからのリクエストで Access-Control-Allow-Origin: * を返す
+# （ローカル/本番の環境差異によるマッチ失敗を回避）
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=cors_origins,
-    allow_origin_regex=".*",  # 念のため全許可（Origin をそのまま返す）
-    allow_credentials=True,
+    allow_origins=["*"],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-logger.info(f"CORS middleware added successfully")
+logger.info("CORS middleware added (allow_origins='*', allow_credentials=False)")
 
 # Mount uploads directory to /static
 if not os.path.exists("uploads"):
